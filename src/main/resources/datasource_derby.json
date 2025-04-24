@@ -1,0 +1,6 @@
+{
+    "jdbcUrl" : "jdbc:derby:memory:testDB",
+    "url" : "jdbc:derby:memory:testDB",
+    "username" : "",
+    "password" : ""
+}
