@@ -5,6 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
+  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>22</java.version>
         <metaclass-version>0.0.1-SNAPSHOT</metaclass-version>
         <junit.version>5.11.4</junit.version>
@@ -66,6 +67,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
