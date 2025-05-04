@@ -136,15 +136,6 @@ public class SchemaCrawlerRdbmsMetaClassService
 	}
 
 
-	//TODO:Inspect attributes to check additional information on column.
-	private void verifyAttributes(Column c, Map<String, Object> attributes) {
-		System.out.println(attributes);
-	}
-
-	private Stream<Table> toStream(Collection<Table> ct) {
-		return ct.stream();
-	}
-
 	private Collection<RdbmsSchemaTable> getCatalogTables(){
 		return schemaCrawlerService.getRdbmsMetaclassTable();
 	}
