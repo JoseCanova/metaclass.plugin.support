@@ -1,6 +1,7 @@
 package org.nanotek.metaclass.schema.crawler;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -45,5 +46,7 @@ public class SchemaCrawlerServiceTest {
 		var theService = new SchemaCrawlerService(theDataService);
 		var tables = theService.getCatalogTables();
 		assertNotNull(tables);
+		assertTrue (!tables.isEmpty());
+		assertTrue(tables.size()==1);
 	}
 }
