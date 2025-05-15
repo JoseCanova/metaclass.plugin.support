@@ -3,11 +3,14 @@ package org.nanotek.metaclass.schema.crawler.classification;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +19,8 @@ import org.nanotek.meta.model.rdbms.RdbmsMetaClass;
 import org.nanotek.metaclass.schema.crawler.SchemaCrawlerDataSourceService;
 import org.nanotek.metaclass.schema.crawler.SchemaCrawlerRdbmsMetaClassService;
 import org.nanotek.metaclass.schema.crawler.SchemaCrawlerService;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SchemaCrawlerIdentityServiceTest {
 
@@ -54,6 +59,7 @@ public class SchemaCrawlerIdentityServiceTest {
 			//avoid the stack trace of derby
 		}
 	}
+	
 	@Test
 	void testSchemaCrawlerRdbmsMetaClassService() {
 		URL url = getClass().getResource("/datasource_derby.json");
