@@ -1,0 +1,1 @@
+ALTER TABLE simple_table ADD PRIMARY KEY (simple_key, simple_key2)

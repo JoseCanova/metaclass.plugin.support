@@ -18,5 +18,6 @@ public class SchemaCrawlerServicePostgresTest {
 		assertNotNull(theDataService);
 		var theService = new SchemaCrawlerService(theDataService);
 		var tables = theService.getCatalogTables();
+		assertTrue(!tables.isEmpty());
 	}
 }

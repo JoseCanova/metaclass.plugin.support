@@ -2,13 +2,12 @@ package org.nanotek.metaclass.schema.crawler;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.nanotek.meta.constants.SystemStaticMessageSource;
 import org.nanotek.meta.model.TableClassName;
+import org.nanotek.meta.model.classification.MetaClassIdentityClassifier.MetaClassIdentityClassification;
 import org.nanotek.meta.model.rdbms.RdbmsIndex;
 import org.nanotek.meta.model.rdbms.RdbmsMetaClass;
 import org.nanotek.meta.model.rdbms.RdbmsMetaClassAttribute;
@@ -16,7 +15,6 @@ import org.nanotek.meta.model.rdbms.RdbmsMetaClassForeignKey;
 import org.nanotek.meta.model.rdbms.table.RdbmsSchemaTable;
 
 import reactor.core.publisher.Mono;
-import schemacrawler.schema.Column;
 import schemacrawler.schema.Table;
 
 //TODO: implement a "symbolic package name" and the classname strategy for camel case.
@@ -36,6 +34,8 @@ public class SchemaCrawlerRdbmsMetaClassService
 	SchemaCrawlerRbmsIndexService schemaCrawlerRbmsIndexService;
 	
 	SchemaCrawlerForeignKeyService schemaCrawlerForeignKeyService;
+	
+	SchemaCrawlerIdentityService schemaCrawlerIdentityService; 
 	
 	public SchemaCrawlerRdbmsMetaClassService() {
 		postConstruct();
@@ -57,6 +57,7 @@ public class SchemaCrawlerRdbmsMetaClassService
 		this.schemaCrawlerRdbmsMetaClassAttributeService = new SchemaCrawlerRdbmsMetaClassAttributeService();
 		this.schemaCrawlerRbmsIndexService=new SchemaCrawlerRbmsIndexService();
 		this.schemaCrawlerForeignKeyService=new SchemaCrawlerForeignKeyService();
+		this.schemaCrawlerIdentityService=new SchemaCrawlerIdentityService ();
 		
 	}
 
@@ -86,9 +87,7 @@ public class SchemaCrawlerRdbmsMetaClassService
 		 return rdbmsMetaClassList;
 	}
 	
-	//TODO: Prepare service to populate foreign key - relation attributes.
-	//TODO: Prepare a properties to manage the case when to use snake_case converter
-	//TODO: Create a class to manage removal of special characteres as being done on previous version.
+	//TODO: create a method to append the classification of the model to the metaclass.
 	private RdbmsMetaClass createMetaClass(RdbmsSchemaTable schemaTable) {
 		Table table = schemaTable.getSchemaTable();
 		String tableName = Optional.ofNullable(table.getName()).orElse(table.getFullName());
@@ -99,9 +98,21 @@ public class SchemaCrawlerRdbmsMetaClassService
 								.concat(SnakeCaseFluentConverter.from(tableName).substring(1));
 		RdbmsMetaClass metaClass = new RdbmsMetaClass(tableName , className , table);
 		populateMetaClassAttributes(metaClass);
+		classifyIdentity(metaClass);
 		return metaClass;
 	}
 	
+	private void classifyIdentity(RdbmsMetaClass metaClass) {
+		Optional<MetaClassIdentityClassification> optClassification = schemaCrawlerIdentityService.classifyIdentity(metaClass);
+		optClassification.ifPresentOrElse(classification->
+													{
+													    metaClass.setIdentityClassification(classification.type().name());
+													}, 
+							()->{
+									throw new RuntimeException();
+								});
+	}
+
 	private void populateMetaClassForeignKeys(RdbmsMetaClass metaClass,List<RdbmsMetaClass>metaClasses) {
 		List<RdbmsMetaClassForeignKey> fks =   schemaCrawlerForeignKeyService
 											.getMetaClassForeignKeys(metaClass, metaClasses); 
@@ -140,6 +151,7 @@ public class SchemaCrawlerRdbmsMetaClassService
 		return schemaCrawlerService.getRdbmsMetaclassTable();
 	}
 
+	//TODO: implement unit test in case of success of fails
 	public Mono<RdbmsMetaClass> getRdbmsMetaClass(Mono<TableClassName> tableClassNameMono) {
 		return tableClassNameMono
 					.flatMap(tcn -> getRdbmsMetaClass(tcn)
@@ -150,7 +162,7 @@ public class SchemaCrawlerRdbmsMetaClassService
 	private Mono<RdbmsMetaClass> getRdbmsMetaClass(TableClassName tcn) {
 		return Mono
 				.just(getMetaClassList().stream()
-				.filter(c -> c.getClassName().equals(tcn.className()) && c.getTableName().equals(tcn.tableName()))
+				.filter(element -> element.getClassName().equals(tcn.className()) && element.getTableName().equals(tcn.tableName()))
 				.findAny()).flatMap(Mono::justOrEmpty);
 	}
 
