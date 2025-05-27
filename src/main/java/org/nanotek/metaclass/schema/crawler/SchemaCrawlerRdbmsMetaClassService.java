@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.nanotek.meta.constants.SystemStaticMessageSource;
 import org.nanotek.meta.model.TableClassName;
-import org.nanotek.meta.model.classification.MetaClassIdentityClassifier.MetaClassIdentityClassification;
+import org.nanotek.meta.model.classification.MetaClassIdentityClassification;
 import org.nanotek.meta.model.rdbms.RdbmsIndex;
 import org.nanotek.meta.model.rdbms.RdbmsMetaClass;
 import org.nanotek.meta.model.rdbms.RdbmsMetaClassAttribute;
